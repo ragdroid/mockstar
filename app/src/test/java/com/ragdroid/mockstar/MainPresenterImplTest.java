@@ -16,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 
 import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.RecordedRequest;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
@@ -31,7 +32,6 @@ public class MainPresenterImplTest extends BaseLogicTest {
 
     @Inject PokemonService pokemonService;
     @Mock MainScene mainSceneMock;
-    private MainPresenterImpl presenter;
 
     @Override
     public void setUp() throws Exception {
@@ -40,8 +40,28 @@ public class MainPresenterImplTest extends BaseLogicTest {
     }
 
     @Test
+    public void testOnSceneAddedHeader() throws InterruptedException {
+        reset(mainSceneMock);
+        MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokemonService);
+
+        presenter.onSceneAdded(mainSceneMock, null);
+        testScheduler.triggerActions();
+        RecordedRequest recordedRequest = getMockWebServer().takeRequest();
+
+        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
+
+        verify(mainSceneMock).setApiText(captor.capture());
+
+        assertEquals("Id : 12", captor.getValue());
+        assertEquals("application/json", recordedRequest.getHeader("Content-Type"));
+
+    }
+
+
+    @Test
     public void testOnSceneAdded() {
-        presenter = new MainPresenterImpl(schedulersProvider, pokemonService);
+        reset(mainSceneMock);
+        MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokemonService);
 
         presenter.onSceneAdded(mainSceneMock, null);
 
