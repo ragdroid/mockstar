@@ -19,7 +19,9 @@ Demo project for using MockWebServer for unit tests. This project also hints on 
  
 ## Implementation
  This project has a separate module called [`mocks`](https://github.com/ragdroid/mockstar/tree/master/mocks). Our android application module `app` has a `testCompile` dependency on the `mocks` module. Also, created a [`LocalResponseDispatcher`](https://github.com/ragdroid/mockstar/blob/master/app/src/main/java/com/ragdroid/mockstar/api/LocalResponseDispatcher.java) which takes care of the local API needs.
- 
+ To run tests :
+ `./gradlew clean test`
+
 ## To-Do
   - Currently the server call is written inside the `Presenter`, so we are testing our [`MainPresenterImpl`](https://github.com/ragdroid/mockstar/blob/master/app/src/test/java/com/ragdroid/mockstar/MainPresenterImplTest.java). Demonstrate a more complex case and extend the demo to test the model. 
   - More Documentation.

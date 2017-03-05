@@ -6,8 +6,6 @@ import com.ragdroid.mockstar.base.BaseSchedulerProvider;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
 
 import javax.inject.Inject;
 
@@ -20,7 +18,6 @@ import okhttp3.mockwebserver.QueueDispatcher;
 /**
  * Created by garimajain on 27/02/17.
  */
-@RunWith(MockitoJUnitRunner.class)
 public class BaseLogicTest {
 
     private LogicTestComponent component;

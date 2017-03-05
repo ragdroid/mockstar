@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.Locale;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.QueueDispatcher;
@@ -34,7 +35,7 @@ public class LocalResponseDispatcher extends QueueDispatcher {
         String scenario = "";
 
         String path = request.getPath();
-        String requestedMethod = request.getMethod().toLowerCase();
+        String requestedMethod = request.getMethod().toLowerCase(Locale.US);
 
         scenario += requestedMethod + path.replace("/", "_") + ".json";
         return scenario;
