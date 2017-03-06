@@ -1,6 +1,5 @@
 package com.ragdroid.mockstar;
 
-import com.ragdroid.mockstar.api.PokemonService;
 import com.ragdroid.mockstar.contracts.MainScene;
 import com.ragdroid.mockstar.dagger.BaseLogicTest;
 
@@ -30,7 +29,7 @@ import static org.mockito.Mockito.verify;
 @RunWith(MockitoJUnitRunner.class)
 public class MainPresenterImplTest extends BaseLogicTest {
 
-    @Inject PokemonService pokemonService;
+    @Inject PokeDataSource pokeDataSource;
     @Mock MainScene mainSceneMock;
 
     @Override
@@ -39,29 +38,13 @@ public class MainPresenterImplTest extends BaseLogicTest {
         super.setUp();
     }
 
-    @Test
-    public void testOnSceneAddedHeader() throws InterruptedException {
-        reset(mainSceneMock);
-        MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokemonService);
 
-        presenter.onSceneAdded(mainSceneMock, null);
-        testScheduler.triggerActions();
-        RecordedRequest recordedRequest = getMockWebServer().takeRequest();
-
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
-
-        verify(mainSceneMock).setApiText(captor.capture());
-
-        assertEquals("Id : 12", captor.getValue());
-        assertEquals("application/json", recordedRequest.getHeader("Content-Type"));
-
-    }
 
 
     @Test
     public void testOnSceneAdded() {
         reset(mainSceneMock);
-        MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokemonService);
+        MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokeDataSource);
 
         presenter.onSceneAdded(mainSceneMock, null);
 
@@ -77,7 +60,7 @@ public class MainPresenterImplTest extends BaseLogicTest {
     @Test
     public void testDemoResponseError503() {
         reset(mainSceneMock);
-        MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokemonService);
+        MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokeDataSource);
 
         MockResponse response = new MockResponse();
         response.setResponseCode(HttpURLConnection.HTTP_UNAVAILABLE);
@@ -96,7 +79,7 @@ public class MainPresenterImplTest extends BaseLogicTest {
     public void testDemoResponseError404() {
         reset(mainSceneMock);
 
-        MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokemonService);
+        MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokeDataSource);
 
         MockResponse response = new MockResponse();
         response.setResponseCode(HttpURLConnection.HTTP_NOT_FOUND);
@@ -115,7 +98,7 @@ public class MainPresenterImplTest extends BaseLogicTest {
     public void testDemoResponseError403() {
         reset(mainSceneMock);
 
-        MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokemonService);
+        MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokeDataSource);
 
         MockResponse response = new MockResponse();
         response.setResponseCode(HttpURLConnection.HTTP_UNAUTHORIZED);
@@ -135,7 +118,7 @@ public class MainPresenterImplTest extends BaseLogicTest {
     public void testDemoResponseErrorSocket() {
         reset(mainSceneMock);
 
-        MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokemonService);
+        MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokeDataSource);
 
         MockResponse response = new MockResponse();
         response.setBody("\"message\":\"Hello\"").throttleBody(1, 2, TimeUnit.SECONDS);
