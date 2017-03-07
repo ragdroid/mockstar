@@ -1,5 +1,6 @@
 package com.ragdroid.mockstar;
 
+import com.ragdroid.mockstar.api.Pokemon;
 import com.ragdroid.mockstar.contracts.MainScene;
 import com.ragdroid.mockstar.dagger.BaseLogicTest;
 
@@ -10,27 +11,32 @@ import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.net.HttpURLConnection;
+import java.net.SocketTimeoutException;
 import java.util.concurrent.TimeUnit;
 
 import javax.inject.Inject;
 
+import io.reactivex.Observable;
 import okhttp3.mockwebserver.MockResponse;
-import okhttp3.mockwebserver.RecordedRequest;
+import retrofit2.HttpException;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 /**
  * Created by garimajain on 05/03/17.
  */
 @RunWith(MockitoJUnitRunner.class)
-public class MainPresenterImplTest extends BaseLogicTest {
+public class MainPresenterImplMockTest extends BaseLogicTest {
 
-    @Inject PokeDataSource pokeDataSource;
+    @Mock PokeDataSource pokeDataSource;
     @Mock MainScene mainSceneMock;
+    @Mock HttpException httpException;
+    @Mock SocketTimeoutException socketTimeoutException;
 
     @Override
     public void setUp() throws Exception {
@@ -46,17 +52,21 @@ public class MainPresenterImplTest extends BaseLogicTest {
         reset(mainSceneMock);
         MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokeDataSource);
 
+        when(pokeDataSource.getPokemonAbilityStringObservable(anyString()))
+                .thenReturn(getMockPokemonObservable());
+
         presenter.onSceneAdded(mainSceneMock, null);
 
         testScheduler.triggerActions();
 
-        ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
 
-        verify(mainSceneMock).setApiText(captor.capture());
+        verify(mainSceneMock, times(1)).setApiText(anyString());
+        verify(mainSceneMock, times(0)).showErrorDialog(anyString());
 
-        assertEquals("Id: 12\n" +
-                "Name: butterfreeAbility Name : tinted-lens\n" +
-                " Is Hidden : true", captor.getValue());
+    }
+
+    private Observable<String> getMockPokemonObservable() {
+        return Observable.just("");
     }
 
     @Test
@@ -64,10 +74,10 @@ public class MainPresenterImplTest extends BaseLogicTest {
         reset(mainSceneMock);
         MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokeDataSource);
 
-        MockResponse response = new MockResponse();
-        response.setResponseCode(HttpURLConnection.HTTP_UNAVAILABLE);
+        when(httpException.code()).thenReturn(HttpURLConnection.HTTP_UNAVAILABLE);
+        when(pokeDataSource.getPokemonAbilityStringObservable(anyString()))
+                .thenReturn(Observable.<String>error(httpException));
 
-        getErrorMockWebServer().enqueue(response);
 
         presenter.onSceneAdded(mainSceneMock, null);
 
@@ -83,10 +93,11 @@ public class MainPresenterImplTest extends BaseLogicTest {
 
         MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokeDataSource);
 
-        MockResponse response = new MockResponse();
-        response.setResponseCode(HttpURLConnection.HTTP_NOT_FOUND);
 
-        getErrorMockWebServer().enqueue(response);
+        when(httpException.code()).thenReturn(HttpURLConnection.HTTP_NOT_FOUND);
+        when(pokeDataSource.getPokemonAbilityStringObservable(anyString()))
+                .thenReturn(Observable.<String>error(httpException));
+
 
         presenter.onSceneAdded(mainSceneMock, null);
 
@@ -97,15 +108,14 @@ public class MainPresenterImplTest extends BaseLogicTest {
     }
 
     @Test
-    public void testDemoResponseError403() {
+    public void testDemoResponseError401() {
         reset(mainSceneMock);
 
         MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokeDataSource);
 
-        MockResponse response = new MockResponse();
-        response.setResponseCode(HttpURLConnection.HTTP_UNAUTHORIZED);
-
-        getErrorMockWebServer().enqueue(response);
+        when(httpException.code()).thenReturn(HttpURLConnection.HTTP_UNAUTHORIZED);
+        when(pokeDataSource.getPokemonAbilityStringObservable(anyString()))
+                .thenReturn(Observable.<String>error(httpException));
 
         presenter.onSceneAdded(mainSceneMock, null);
 
@@ -122,16 +132,15 @@ public class MainPresenterImplTest extends BaseLogicTest {
 
         MainPresenterImpl presenter = new MainPresenterImpl(schedulersProvider, pokeDataSource);
 
-        MockResponse response = new MockResponse();
-        response.setBody("\"message\":\"Hello\"").throttleBody(1, 2, TimeUnit.SECONDS);
-
-        getErrorMockWebServer().enqueue(response);
+        when(socketTimeoutException.getMessage()).thenReturn("");
+        when(pokeDataSource.getPokemonAbilityStringObservable(anyString()))
+                .thenReturn(Observable.<String>error(socketTimeoutException));
 
         presenter.onSceneAdded(mainSceneMock, null);
 
         testScheduler.triggerActions();
 
-        verify(mainSceneMock, times(1)).showErrorDialog(anyString());
+        verify(mainSceneMock, times(1)).showErrorDialog("");
         verify(mainSceneMock, times(0)).setApiText(anyString());
     }
 

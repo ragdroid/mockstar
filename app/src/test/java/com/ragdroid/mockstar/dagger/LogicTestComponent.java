@@ -1,6 +1,8 @@
 package com.ragdroid.mockstar.dagger;
 
+import com.ragdroid.mockstar.MainPresenterImplMockTest;
 import com.ragdroid.mockstar.MainPresenterImplTest;
+import com.ragdroid.mockstar.PokeDataSourceTest;
 
 import javax.inject.Singleton;
 
@@ -14,5 +16,9 @@ import dagger.Component;
 @Component(modules = {LogicTestModule.class})
 public interface LogicTestComponent {
 
-    void inject(MainPresenterImplTest mainPresenterImplTest);
+    void inject(MainPresenterImplTest mainPresenterImplMockTest);
+
+    void inject(PokeDataSourceTest pokeDataSourceTest);
+
+    void inject(MainPresenterImplMockTest mainPresenterImplMockTest);
 }
