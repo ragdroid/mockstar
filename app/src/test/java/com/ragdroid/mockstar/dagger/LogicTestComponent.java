@@ -1,5 +1,6 @@
 package com.ragdroid.mockstar.dagger;
 
+import com.ragdroid.mockstar.MainPresenterImplMockTest;
 import com.ragdroid.mockstar.MainPresenterImplTest;
 import com.ragdroid.mockstar.PokeDataSourceTest;
 
@@ -18,4 +19,6 @@ public interface LogicTestComponent {
     void inject(MainPresenterImplTest mainPresenterImplMockTest);
 
     void inject(PokeDataSourceTest pokeDataSourceTest);
+
+    void inject(MainPresenterImplMockTest mainPresenterImplMockTest);
 }

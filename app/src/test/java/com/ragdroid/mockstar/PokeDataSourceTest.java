@@ -16,8 +16,6 @@ import okhttp3.mockwebserver.RecordedRequest;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.Mockito.reset;
-import static org.mockito.Mockito.verify;
 
 /**
  * Created by garimajain on 07/03/17.
@@ -36,11 +34,11 @@ public class PokeDataSourceTest extends BaseLogicTest {
     }
 
     @Test
-    public void testOnSceneAddedHeader() throws InterruptedException {
+    public void testOnAddedHeader() throws InterruptedException {
         PokeDataSource dataSource = new PokeDataSource(pokemonService);
 
         TestObserver<String> observer = new TestObserver<>();
-        dataSource.getPokemonStringObservable(anyString()).subscribe(observer);
+        dataSource.getPokemonStringObservable("12").subscribe(observer);
 
         RecordedRequest recordedRequest = getMockWebServer().takeRequest();
 
