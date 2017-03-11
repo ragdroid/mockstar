@@ -13,8 +13,8 @@ Demo project for using MockWebServer for unit tests. This project also hints on 
  - Makes use of [`Dagger2`](https://google.github.io/dagger/)
  - Uses [`Retrofit2`](https://github.com/square/retrofit) to fetch from the [Pokemon API](http://www.pokeapi.co/docsv2/#pokemon)
  - Uses [Butterknife](http://jakewharton.github.io/butterknife/)
- - Uses `TestScheduler` for writing tests.
- - Also uses [`Mockito`](http://site.mockito.org/) for mocking out the `View` for now.
+ - Uses `TestScheduler` and `TestObserver` for writing tests.
+ - Also uses [`Mockito`](http://site.mockito.org/) for mocking out the `View`s and other things for `Presenter` testing.
  - This project makes use of [`MockWebServer`](https://github.com/square/okhttp/tree/master/mockwebserver)
  
 ## Implementation
